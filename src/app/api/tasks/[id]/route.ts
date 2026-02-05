@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import { pusher } from '@/lib/pusher'
 
 export async function PATCH(
   request: NextRequest,
@@ -20,7 +19,6 @@ export async function PATCH(
       }
     })
 
-    await pusher.trigger('tasks', 'task-updated', task)
     return NextResponse.json(task)
   } catch (error) {
     console.error('PATCH /api/tasks/[id] error:', error)
@@ -34,8 +32,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = params
-    const task = await prisma.task.delete({ where: { id } })
-    await pusher.trigger('tasks', 'task-deleted', task)
+    await prisma.task.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/tasks/[id] error:', error)
