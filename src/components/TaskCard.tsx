@@ -6,44 +6,74 @@ interface TaskCardProps {
   task: Task
   onStatusChange: (id: string, status: TaskStatus) => void
   onDelete: (id: string) => void
+  delay?: number
 }
 
-const statusColors: Record<TaskStatus, string> = {
-  backlog: 'border-l-gray-500',
-  in_progress: 'border-l-yellow-500',
-  completed: 'border-l-green-500'
-}
-
-export function TaskCard({ task, onStatusChange, onDelete }: TaskCardProps) {
-  const nextStatus: Record<TaskStatus, TaskStatus> = {
-    backlog: 'in_progress',
-    in_progress: 'completed',
-    completed: 'backlog'
+const statusConfig = {
+  backlog: { 
+    dot: 'bg-gray-500',
+    next: 'in_progress' as TaskStatus,
+    nextLabel: 'Start →'
+  },
+  in_progress: { 
+    dot: 'bg-yellow-500',
+    next: 'completed' as TaskStatus,
+    nextLabel: 'Complete →'
+  },
+  completed: { 
+    dot: 'bg-green-500',
+    next: 'backlog' as TaskStatus,
+    nextLabel: 'Reopen →'
   }
+}
+
+export function TaskCard({ task, onStatusChange, onDelete, delay = 0 }: TaskCardProps) {
+  const config = statusConfig[task.status as TaskStatus]
 
   return (
-    <div className={`bg-gray-800 rounded-lg p-4 border-l-4 ${statusColors[task.status as TaskStatus]}`}>
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium text-white">{task.title}</h3>
+    <div 
+      className="group bg-[#1a1a24] hover:bg-[#252532] border border-[#2a2a35] hover:border-[#3a3a45] rounded-xl p-4 transition-all duration-200 animate-fadeIn hover:shadow-lg hover:shadow-black/20"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className={`w-2 h-2 rounded-full ${config.dot} mt-2 flex-shrink-0`} />
+          <h3 className="font-medium text-white leading-tight line-clamp-2">
+            {task.title}
+          </h3>
+        </div>
         <button
           onClick={() => onDelete(task.id)}
-          className="text-gray-500 hover:text-red-400 text-sm"
+          className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 p-1 rounded transition-all flex-shrink-0"
+          title="Delete task"
         >
-          ✕
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
+
+      {/* Description */}
       {task.description && (
-        <p className="text-gray-400 text-sm mb-3">{task.description}</p>
+        <p className="text-gray-400 text-sm mb-4 line-clamp-2 pl-5">
+          {task.description}
+        </p>
       )}
-      <div className="flex justify-between items-center">
-        <span className="text-xs text-gray-500">
-          {new Date(task.updatedAt).toLocaleDateString()}
+
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-3 border-t border-[#2a2a35]">
+        <span className="text-gray-500 text-xs">
+          {new Date(task.updatedAt).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric' 
+          })}
         </span>
         <button
-          onClick={() => onStatusChange(task.id, nextStatus[task.status as TaskStatus])}
-          className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-gray-300"
+          onClick={() => onStatusChange(task.id, config.next)}
+          className="text-xs font-medium text-gray-400 hover:text-white bg-[#2a2a35] hover:bg-[#3a3a45] px-3 py-1.5 rounded-lg transition-colors"
         >
-          Move →
+          {config.nextLabel}
         </button>
       </div>
     </div>
