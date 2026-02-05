@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import { pusher } from '@/lib/pusher'
 
 export async function GET() {
@@ -9,6 +9,7 @@ export async function GET() {
     })
     return NextResponse.json(tasks)
   } catch (error) {
+    console.error('GET /api/tasks error:', error)
     return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 })
   }
 }
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
     await pusher.trigger('tasks', 'task-created', task)
     return NextResponse.json(task, { status: 201 })
   } catch (error) {
+    console.error('POST /api/tasks error:', error)
     return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
   }
 }
