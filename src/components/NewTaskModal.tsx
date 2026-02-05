@@ -2,65 +2,77 @@
 
 import { useState } from 'react'
 
-interface Props {
+interface NewTaskModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (title: string, description: string) => void
 }
 
-export function NewTaskModal({ isOpen, onClose, onSubmit }: Props) {
+export function NewTaskModal({ isOpen, onClose, onSubmit }: NewTaskModalProps) {
   const [title, setTitle] = useState('')
-  const [desc, setDesc] = useState('')
+  const [description, setDescription] = useState('')
 
   if (!isOpen) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-    onSubmit(title, desc)
+    onSubmit(title, description)
     setTitle('')
-    setDesc('')
+    setDescription('')
     onClose()
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold text-white mb-4">New Task</h2>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111118] border border-[#2a2a35] rounded-xl p-5 w-full max-w-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">New Task</h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-white p-1"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Title</label>
+            <label className="block text-gray-400 text-sm mb-2">Title</label>
             <input
               type="text"
               value={title}
-              onChange={e => setTitle(e.target.value)}
-              className="w-full bg-gray-800 rounded-lg px-3 py-2 text-white border border-gray-700 focus:border-orange-500 outline-none"
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full bg-[#1a1a24] border border-[#2a2a35] text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#ff5a2d] text-sm"
               placeholder="What needs to be done?"
               autoFocus
             />
           </div>
+
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Description (optional)</label>
+            <label className="block text-gray-400 text-sm mb-2">Description (optional)</label>
             <textarea
-              value={desc}
-              onChange={e => setDesc(e.target.value)}
-              className="w-full bg-gray-800 rounded-lg px-3 py-2 text-white border border-gray-700 focus:border-orange-500 outline-none resize-none"
-              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-[#1a1a24] border border-[#2a2a35] text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#ff5a2d] text-sm h-20 resize-none"
               placeholder="Add details..."
             />
           </div>
+
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-lg"
+              className="flex-1 px-4 py-2.5 text-gray-400 hover:text-white bg-[#1a1a24] hover:bg-[#252532] rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-2 rounded-lg font-medium"
+              className="flex-1 px-4 py-2.5 bg-[#ff5a2d] hover:bg-[#ff6b3d] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
             >
               Create
             </button>
